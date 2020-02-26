@@ -3,22 +3,29 @@
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     android:orientation="vertical"
-    android:padding="16dp">
+    android:padding="1dp">
+
     <Button
         android:id="@+id/recognize_file"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/recognize_file"/>
+        android:layout_height="40dp"
+        android:text="@string/recognize_file"
+        android:textSize="14sp"
+        android:visibility="gone" />
+
     <Button
         android:id="@+id/recognize_mic"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/recognize_microphone"/>
+        android:layout_height="50dp"
+        android:text="@string/recognize_microphone"
+        android:textSize="24sp" />
+
     <TextView
         android:id="@+id/result_text"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:gravity="bottom"
         android:scrollbars="vertical"
-        android:textAppearance="?android:attr/textAppearanceMedium" />
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:textSize="24sp" />
 </LinearLayout>

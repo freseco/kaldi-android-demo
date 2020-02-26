@@ -1,0 +1,9 @@
+{"partial":"uno dos y tres"}
+{
+"result":[
+		{"word":"uno" ,"start":24,"end":25,"conf":1},
+		{"word":"dos" ,"start":24,"end":25,"conf":1},
+		{"word":"y"   ,"start":24,"end":25,"conf":1},
+		{"word":"tres","start":24,"end":25,"conf":1}],
+"text":"uno dos y tres"
+}
