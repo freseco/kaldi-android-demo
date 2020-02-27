@@ -3,10 +3,11 @@
     <string name="app_name">Kaldi Demo</string>
     <string name="elapsed">"Resultado %s elapsed %d milisegundos "</string>
     <string name="ready">Preparado</string>
-    <string name="recognize_microphone">Reconocer microfono</string>
+    <string name="recognize_microphone">Escuchar</string>
     <string name="starting">Comenzando</string>
-    <string name="stop_microphone">Parar Microfono</string>
+    <string name="stop_microphone">Parar de escuchar</string>
     <string name="recognize_file">Reconocer fichero</string>
     <string name="preparing">Preparando el reconocedor</string>
     <string name="failed">Fallo la inicializacion del reconocedor %s</string>
+    <string name="Initialitation">Inicializando..</string>
 </resources>

@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
@@ -17,14 +18,27 @@
         android:id="@+id/recognize_mic"
         android:layout_width="match_parent"
         android:layout_height="50dp"
+        android:backgroundTint="#F6D4D4"
         android:text="@string/recognize_microphone"
         android:textSize="24sp" />
+
+    <TextView
+        android:id="@+id/maintext"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="#E6F8F4"
+        android:paddingLeft="15dp"
+        android:textAlignment="center"
+        android:textSize="36sp"
+        android:textStyle="bold" />
 
     <TextView
         android:id="@+id/result_text"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:gravity="bottom"
+        android:paddingLeft="20dp"
+        android:paddingTop="20dp"
         android:scrollbars="vertical"
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:textSize="24sp" />

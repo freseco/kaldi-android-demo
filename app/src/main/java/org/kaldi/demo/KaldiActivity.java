@@ -19,25 +19,24 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.content.pm.ProviderInfo;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.media.AudioManager;
-import android.media.FaceDetector;
 import android.media.ToneGenerator;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import androidx.annotation.NonNull;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
-
 import android.os.Vibrator;
 import android.provider.Settings;
+import android.speech.tts.TextToSpeech;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+
+import androidx.annotation.NonNull;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 
 import org.json.JSONObject;
 import org.kaldi.Assets;
@@ -51,8 +50,11 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.lang.ref.WeakReference;
 import java.text.DecimalFormat;
-
-import static java.lang.Math.round;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.Locale;
+import java.util.TimeZone;
 
 public class KaldiActivity extends Activity implements RecognitionListener {
 
@@ -75,15 +77,22 @@ public class KaldiActivity extends Activity implements RecognitionListener {
     private Model model;
     private SpeechRecognizer recognizer;
     TextView resultView;
+    TextView maintext;
+
+
+private boolean comandoencontrado;
 
 
     private String backupText;
+
+    private TextToSpeech tts;
 
 //region Posicionamiento GPS
     private LocationManager locationManager;
     private LocationListener locationListener;
     private String altitud="";
     private String longitud="";
+    private String latitud="";
     DecimalFormat df=new DecimalFormat("###.####");
 //endregion
 
@@ -92,16 +101,45 @@ public class KaldiActivity extends Activity implements RecognitionListener {
         super.onCreate(state);
         setContentView(R.layout.main);
 
+      comandoencontrado=false;
+
+
+
+        tts = tts=new TextToSpeech(this, new TextToSpeech.OnInitListener() {
+
+            @Override
+            public void onInit(int status) {
+
+                if(status == TextToSpeech.SUCCESS){
+                    //it has to get system language
+                    int result=tts.setLanguage(new Locale("es", "ES"));
+
+                    if(result==TextToSpeech.LANG_MISSING_DATA ||
+                            result==TextToSpeech.LANG_NOT_SUPPORTED){
+                        Log.e("error", "This Language is not supported");
+                    }
+                    else{
+                        ConvertTextToSpeech("Asistente listo.");
+                    }
+                }
+                else
+                    Log.e("error", "Initilization Failed!");
+            }
+        });
+
+
+
         //region Posición GPS
         locationManager=(LocationManager)getSystemService(LOCATION_SERVICE);
         locationListener=new LocationListener() {
             @Override
             public void onLocationChanged(Location location) {
 
-                altitud  =df.format(location.getAltitude());
-                longitud =df.format(location.getLongitude());
+                altitud  = df.format(location.getAltitude());
+                longitud = df.format(location.getLongitude());
+                latitud  = df.format(location.getLatitude());
 
-                resultView.append("Alt: "+altitud+"   -   Long: "+longitud+"\n");
+                addTextoResultText("Alt: "+altitud+" -  Long: "+longitud+"  -   latitud: "+latitud);
             }
 
             @Override
@@ -111,7 +149,7 @@ public class KaldiActivity extends Activity implements RecognitionListener {
 
             @Override
             public void onProviderEnabled(String provider) {
-                resultView.append("Provider: "+provider+"\n");
+                addTextoResultText("Provider: "+provider);
             }
 
             @Override
@@ -127,6 +165,7 @@ public class KaldiActivity extends Activity implements RecognitionListener {
 
         // Setup layout
         resultView = findViewById(R.id.result_text);
+        maintext=findViewById(R.id.maintext);
         setUiState(STATE_START);
 
 //
@@ -284,9 +323,11 @@ public class KaldiActivity extends Activity implements RecognitionListener {
             }
 
 
+            addTextoResultText("->" + tx);
 
-            resultView.append("->" + tx + "\n");
+          if(!comandoencontrado)  maintext.setText(tx);
 
+          comandoencontrado=false;
 
             Log.i(TAG, "Result: " + tx);
         }
@@ -310,8 +351,8 @@ public class KaldiActivity extends Activity implements RecognitionListener {
 
                 if (texto.length()>0)
                 {
-                    resultView.append(texto + "...\n");
-                    comando(texto);
+                    addTextoResultText(texto + "...");
+                    comandoencontrado = comando(texto);
                 }
 
                 backupText=texto;
@@ -346,11 +387,11 @@ public class KaldiActivity extends Activity implements RecognitionListener {
             case "cerrar aplicación":finish(); System.exit(0); break;
 
             case "borrar última palabra":
-            case "borrar texto":resultView.setText("");beep(); break;
+            case "borrar texto":maintext.setText("");beep(); break;
 
             case "repetir texto":
             case "repetir números":
-            case "repetir número":Vibrar(); break;
+            case "repetir número":Vibrar();ConvertTextToSpeech(maintext.getText().toString()); break;
 
             case "mostrar ficha":beep(); break;
             case "borrar último":Vibrar(); break;
@@ -366,6 +407,7 @@ public class KaldiActivity extends Activity implements RecognitionListener {
             break;
 
             case "detener posiciones geográficas":
+                Vibrar();
                 locationManager.removeUpdates(locationListener);
                 break;
 
@@ -402,27 +444,27 @@ return encontrado;
     }
 
     public  void addtexto(String txt){
-        resultView.append(txt + "\n");
+        addTextoResultText(txt );
     }
 
     public void setUiState(int state) {
 
         switch (state) {
             case STATE_START:
-                resultView.setText(R.string.preparing);
+               addTextoResultText(R.string.Initialitation);
 //                findViewById(R.id.recognize_file).setEnabled(false);
                 findViewById(R.id.recognize_mic).setEnabled(false);
                 Log.i(TAG,"State: Start");
                 break;
             case STATE_READY:
-                resultView.setText(R.string.ready);
+                addTextoResultText(R.string.ready);
                 ((Button) findViewById(R.id.recognize_mic)).setText(R.string.recognize_microphone);
 //                findViewById(R.id.recognize_file).setEnabled(true);
                 findViewById(R.id.recognize_mic).setEnabled(true);
                 Log.i(TAG,"State: Ready");
                 break;
             case STATE_FILE:
-                resultView.append(getString(R.string.starting));
+                addTextoResultText(getString(R.string.starting));
                 findViewById(R.id.recognize_mic).setEnabled(false);
 //                findViewById(R.id.recognize_file).setEnabled(false);
                 Log.i(TAG,"State: File");
@@ -453,7 +495,6 @@ return encontrado;
 
         Log.i(TAG,"Microphone.");
 
-//
         if (recognizer != null) {
             setUiState(STATE_READY);
             recognizer.cancel();
@@ -469,6 +510,48 @@ return encontrado;
             }
         }
     }
+
+//region Añadir texto al textview
+    public void addTextoResultText(int texto){
+
+        addTextoResultText(getResources().getString(texto));
+
+    }
+
+    public void addTextoResultText(String texto){
+       String Hora = getCurrentTime();
+       resultView.append(Hora+": "+texto+"\n");
+    }
+
+
+    public static String getCurrentTime() {
+        SimpleDateFormat dateFormat = new SimpleDateFormat("hh:mm:ss");
+        dateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
+        Date today = Calendar.getInstance().getTime();
+        return dateFormat.format(today);
+    }
+
+//endregion
+
+
+    //region pronunciar
+
+
+    private void ConvertTextToSpeech(String texto) {
+
+            //pausar asistente
+        recognizeMicrophone();
+
+            tts.speak(texto, TextToSpeech.QUEUE_FLUSH, null);
+
+            //iniciar asistente
+        recognizeMicrophone();
+
+
+        //tts.speak("Text to say aloud", TextToSpeech.QUEUE_ADD, null);
+
+    }
+    //endregion
 
     /*
      * Convierte el número expresado en texto a número expresado en decimal.
