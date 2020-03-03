@@ -10,6 +10,8 @@
     <string name="elapsed">"Result %s elapsed %d milliseconds "</string>
     <string name="starting">Starting\n</string>
     <string name="recognize_microphone">Recognize Microphone</string>
-    <string name="Initialitation">Inicializando..</string>
+    <string name="list_of_commands">List of commands:</string>
+    <string name="help_commands_label">For help, say: "Lista de comandos"</string>
+    <string name="Initialitation">Initializing...</string>
 
 </resources>

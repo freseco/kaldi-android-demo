@@ -325,7 +325,7 @@ private boolean comandoencontrado;
 
             addTextoResultText("->" + tx);
 
-          if(!comandoencontrado)  maintext.setText(tx);
+          if(!comandoencontrado) setTextoMainText(tx.toString());
 
           comandoencontrado=false;
 
@@ -353,6 +353,7 @@ private boolean comandoencontrado;
                 {
                     addTextoResultText(texto + "...");
                     comandoencontrado = comando(texto);
+                    //setTextoMainText(texto);
                 }
 
                 backupText=texto;
@@ -376,6 +377,7 @@ private boolean comandoencontrado;
         Log.e(TAG,"Error: "+e.getMessage());
     }
 
+    //region Comandos
 
     public  boolean comando(String tx){
 
@@ -384,9 +386,10 @@ private boolean comandoencontrado;
         switch (tx){
             case "detener aplicación":
             case "cerrar la aplicación":
+            case "salir de la aplicación":
             case "cerrar aplicación":finish(); System.exit(0); break;
 
-            case "borrar última palabra":
+            case "borrar última palabra":beep(); maintext.setText(borrarUltimaPalabra(maintext.getText().toString())); break;
             case "borrar texto":maintext.setText("");beep(); break;
 
             case "repetir texto":
@@ -394,7 +397,10 @@ private boolean comandoencontrado;
             case "repetir número":Vibrar();ConvertTextToSpeech(maintext.getText().toString()); break;
 
             case "mostrar ficha":beep(); break;
-            case "borrar último":Vibrar(); break;
+
+            case "lista de comandos":
+                CustomDialogClass cdd=new CustomDialogClass(this,5);
+                break;
 
             case "posición geográfica":
             case "posición gps":Vibrar();
@@ -420,8 +426,9 @@ private boolean comandoencontrado;
 
             default:encontrado= false;
         }
-return encontrado;
+        return encontrado;
     }
+
 
     public  void beep(){
     ToneGenerator toneGen1 = new ToneGenerator(AudioManager.STREAM_MUSIC,ToneGenerator.MAX_VOLUME);
@@ -443,9 +450,7 @@ return encontrado;
         setUiState(STATE_READY);
     }
 
-    public  void addtexto(String txt){
-        addTextoResultText(txt );
-    }
+
 
     public void setUiState(int state) {
 
@@ -512,6 +517,11 @@ return encontrado;
     }
 
 //region Añadir texto al textview
+
+public void setTextoMainText(String tx){
+        maintext.setText(tx);
+}
+
     public void addTextoResultText(int texto){
 
         addTextoResultText(getResources().getString(texto));
@@ -542,7 +552,7 @@ return encontrado;
             //pausar asistente
         recognizeMicrophone();
 
-            tts.speak(texto, TextToSpeech.QUEUE_FLUSH, null);
+           tts.speak(texto, TextToSpeech.QUEUE_FLUSH, null);
 
             //iniciar asistente
         recognizeMicrophone();
@@ -593,6 +603,15 @@ return encontrado;
         }
 
         return numero;
+    }
+
+
+    public String borrarUltimaPalabra(String texto){
+        String result="";
+
+        result=texto.substring(0,texto.lastIndexOf(" "));
+
+        return  result;
     }
 
 

@@ -93,7 +93,7 @@ public class KaldiClass implements RecognitionListener {
 
             String texto=obj.getString("partial");
 
-            ((KaldiActivity)context).addtexto(texto);
+          //  ((KaldiActivity)context).addtexto(texto);
 
 //            if (texto.length()==0)
 //            {
@@ -135,7 +135,7 @@ public class KaldiClass implements RecognitionListener {
                 tx.append(" "+textToNumber(a));
             }
 
-            ((KaldiActivity)context).addtexto(tx.toString());
+          //  ((KaldiActivity)context).addtexto(tx.toString());
 
 //            resultView.append(tx + "\n");
             Log.i(TAG, "Result: " + tx);
@@ -225,5 +225,7 @@ public class KaldiClass implements RecognitionListener {
 
         return numero;
     }
+
+
 
 }

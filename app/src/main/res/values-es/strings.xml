@@ -10,4 +10,6 @@
     <string name="preparing">Preparando el reconocedor</string>
     <string name="failed">Fallo la inicializacion del reconocedor %s</string>
     <string name="Initialitation">Inicializando..</string>
+    <string name="list_of_commands">Lista de comandos:</string>
+    <string name="help_commands_label">Para obtener ayuda, diga: Lista de comandos</string>
 </resources>
