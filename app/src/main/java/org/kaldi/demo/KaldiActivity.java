@@ -80,7 +80,7 @@ public class KaldiActivity extends Activity implements RecognitionListener {
     TextView maintext;
 
 
-private boolean comandoencontrado;
+    private boolean comandoencontrado;
 
 
     private String backupText;
@@ -105,8 +105,7 @@ private boolean comandoencontrado;
 
 
 
-        tts = tts=new TextToSpeech(this, new TextToSpeech.OnInitListener() {
-
+        tts = new TextToSpeech(this, new TextToSpeech.OnInitListener() {
             @Override
             public void onInit(int status) {
 
@@ -428,6 +427,8 @@ private boolean comandoencontrado;
         }
         return encontrado;
     }
+
+
 
 
     public  void beep(){
