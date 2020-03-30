@@ -29,6 +29,7 @@ import android.os.Bundle;
 import android.os.Vibrator;
 import android.provider.Settings;
 import android.speech.tts.TextToSpeech;
+import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -93,13 +94,16 @@ public class KaldiActivity extends Activity implements RecognitionListener {
     private String altitud="";
     private String longitud="";
     private String latitud="";
-    DecimalFormat df=new DecimalFormat("###.####");
+    DecimalFormat df=new DecimalFormat("###.###");
+    DecimalFormat dfAlt=new DecimalFormat("####.#");
 //endregion
 
     @Override
     public void onCreate(Bundle state) {
         super.onCreate(state);
         setContentView(R.layout.main);
+
+
 
       comandoencontrado=false;
 
@@ -135,10 +139,16 @@ public class KaldiActivity extends Activity implements RecognitionListener {
             public void onLocationChanged(Location location) {
 
                 altitud  = df.format(location.getAltitude());
-                longitud = df.format(location.getLongitude());
-                latitud  = df.format(location.getLatitude());
 
-                addTextoResultText("Alt: "+altitud+" -  Long: "+longitud+"  -   latitud: "+latitud);
+                double longit=location.getLongitude();
+                longitud =aniadirletra(longit,"E","W");
+
+                double latit=location.getLatitude();
+                latitud  =aniadirletra(latit,"N","S");
+
+                String distancia=KmYmetros(getDistanceFromLatLonInKm(40.441681, -3.631427,latit,longit));
+
+                addTextoResultText("Alt:"+altitud+"m  Long:"+longitud+"  Lat:"+latitud+" dist:"+distancia);
             }
 
             @Override
@@ -157,6 +167,10 @@ public class KaldiActivity extends Activity implements RecognitionListener {
                 startActivity(intent);
             }
         };
+
+
+
+
         //endregion
 
 
@@ -195,6 +209,57 @@ public class KaldiActivity extends Activity implements RecognitionListener {
 
 
 
+    }
+
+//region posicionamiento calculo distancia
+
+    public String KmYmetros(double distance){
+        int km=(int)distance;
+        int metros=(int) ((distance-km)*1000);
+
+        if (km>0){
+            return km+"km. "+ metros+"m.";
+        }
+        else{
+            return metros+"m.";
+        }
+    }
+
+    public  double  getDistanceFromLatLonInKm(double lat1,double lon1,double lat2,double lon2) {
+        double R = 6371; // Radius of the earth in km
+        double dLat = deg2rad(lat2-lat1);  // deg2rad below
+        double dLon = deg2rad(lon2-lon1);
+        double a =
+                Math.sin(dLat/2) * Math.sin(dLat/2) +
+                        Math.cos(deg2rad(lat1)) * Math.cos(deg2rad(lat2)) *
+                                Math.sin(dLon/2) * Math.sin(dLon/2);
+        double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+        double d = R * c; // Distance in km
+        return d;
+    }
+
+    public double deg2rad(double deg) {
+        return deg * (Math.PI/180);
+    }
+
+    //endregion
+
+
+    private String aniadirletra(double number,String positive,String negative){
+
+        String letra="";
+        String numformateado;
+
+        if (number>=0){
+            letra=positive;
+        }
+        else {
+            letra=negative;
+        }
+
+        numformateado=letra + df.format(number).replace("-","");
+
+        return  numformateado;
     }
 
     private static class SetupTask extends AsyncTask<Void, Void, Exception> {
@@ -402,9 +467,9 @@ public class KaldiActivity extends Activity implements RecognitionListener {
                 break;
 
             case "posición geográfica":
-            case "posición gps":Vibrar();
+            case "posición gps":Vibrar();beep();
               try{
-                  locationManager.requestLocationUpdates("gps",5000,0,locationListener);
+                  locationManager.requestLocationUpdates("gps",2000,0,locationListener);
               }
               catch (SecurityException ex){
                   Log.e(TAG,"Sin permiso para la localización");
@@ -412,6 +477,7 @@ public class KaldiActivity extends Activity implements RecognitionListener {
             break;
 
             case "detener posiciones geográficas":
+            case "terminar posiciones geográficas":
                 Vibrar();
                 locationManager.removeUpdates(locationListener);
                 break;
@@ -519,7 +585,7 @@ public class KaldiActivity extends Activity implements RecognitionListener {
 
 //region Añadir texto al textview
 
-public void setTextoMainText(String tx){
+    public void setTextoMainText(String tx){
         maintext.setText(tx);
 }
 
@@ -532,6 +598,12 @@ public void setTextoMainText(String tx){
     public void addTextoResultText(String texto){
        String Hora = getCurrentTime();
        resultView.append(Hora+": "+texto+"\n");
+
+       while (resultView.canScrollVertically(1)){
+           resultView.scrollBy(0,1);
+       }
+       resultView.setMovementMethod(new ScrollingMovementMethod());
+
     }
 
 
