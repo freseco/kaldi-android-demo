@@ -146,6 +146,7 @@ public class KaldiActivity extends Activity implements RecognitionListener {
                 double latit=location.getLatitude();
                 latitud  =aniadirletra(latit,"N","S");
 
+                //calculamos la distancia entre un punto y nuestra posición.
                 String distancia=KmYmetros(getDistanceFromLatLonInKm(40.441681, -3.631427,latit,longit));
 
                 addTextoResultText("Alt:"+altitud+"m  Long:"+longitud+"  Lat:"+latitud+" dist:"+distancia);
@@ -608,8 +609,8 @@ public class KaldiActivity extends Activity implements RecognitionListener {
 
 
     public static String getCurrentTime() {
-        SimpleDateFormat dateFormat = new SimpleDateFormat("hh:mm:ss");
-        dateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
+        SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
+        dateFormat.setTimeZone(TimeZone.getTimeZone("Europe/Madrid"));
         Date today = Calendar.getInstance().getTime();
         return dateFormat.format(today);
     }
