@@ -132,7 +132,7 @@ public class KaldiActivity extends Activity implements RecognitionListener {
 
 
 
-        //region Posición GPS
+    //region Posición GPS
         locationManager=(LocationManager)getSystemService(LOCATION_SERVICE);
         locationListener=new LocationListener() {
             @Override
@@ -168,11 +168,7 @@ public class KaldiActivity extends Activity implements RecognitionListener {
                 startActivity(intent);
             }
         };
-
-
-
-
-        //endregion
+    //endregion
 
 
         backupText="";
@@ -243,9 +239,9 @@ public class KaldiActivity extends Activity implements RecognitionListener {
         return deg * (Math.PI/180);
     }
 
-    //endregion
-
-
+    /*
+     * Convierte el signo negativo en la letro que corresponda a las coordenadas
+     * */
     private String aniadirletra(double number,String positive,String negative){
 
         String letra="";
@@ -262,6 +258,10 @@ public class KaldiActivity extends Activity implements RecognitionListener {
 
         return  numformateado;
     }
+
+    //endregion
+
+
 
     private static class SetupTask extends AsyncTask<Void, Void, Exception> {
         WeakReference<KaldiActivity> KaldiReference;
@@ -462,6 +462,14 @@ public class KaldiActivity extends Activity implements RecognitionListener {
             case "repetir número":Vibrar();ConvertTextToSpeech(maintext.getText().toString()); break;
 
             case "mostrar ficha":beep(); break;
+
+            case "encender linterna":
+
+                LinternaSingleton.getInstance(this).turnOnFlashLight();break;
+            case "apagar linterna":
+
+                LinternaSingleton.getInstance(this).turnOffFlashLight();
+                break;
 
             case "lista de comandos":
                 CustomDialogClass cdd=new CustomDialogClass(this,5);
